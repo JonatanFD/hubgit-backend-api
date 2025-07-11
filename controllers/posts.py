@@ -1,11 +1,13 @@
 from fastapi import APIRouter
 from redis_om import NotFoundError
+from starlette.status import HTTP_200_OK
 
 from entities.company import Company
 from entities.post import Post, PostComment
 from resources.create_post_resource import CreatePostResource
 from controllers.companies import get_members
 from resources.comment_post_resource import CommentPostResource
+from resources.like_a_post_resource import LikePostResource
 
 router = APIRouter(prefix="/companies", tags=["posts"])
 
@@ -92,6 +94,30 @@ async def comment_post(resource: CommentPostResource ,company_id: str, post_id: 
     # Return the saved comment as a dictionary
     return saved_comment.model_dump()
 
+@router.post("/{company_id}/posts/{post_id}/likes")
+async def like_post(company_id: str, post_id: str, resource: LikePostResource):
+    # check if the company exists
+    try:
+        company = Company.get(company_id)
+    except NotFoundError:
+        return {"error": "Company not found"}
+
+    # check if the post exists
+    try:
+        post = Post.get(post_id)
+    except NotFoundError:
+        return {"error": "Post not found"}
+
+    # check if the user is a member of the company
+    members = await get_members(company_id)
+    if resource.user_id not in [member["user_id"] for member in members]:
+        return {"error": "User is not a member of this company"}
+
+    # Add the user to the likes set
+    post.likes.add(resource.user_id)
+    post.save()
+
+    return HTTP_200_OK
 
 """
 jonatan : 01JZXH2GW5V24620DHNBTFBDTC
