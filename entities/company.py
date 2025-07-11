@@ -12,12 +12,11 @@ class CompanyMemberRoles(str, Enum):
     MEMBER = "member"
 
 class Company(JsonModel, index=True):
-    created_at: str = Field(default_factory=lambda: datetime.now().isoformat())
-
     name: str = Field(default="", description="Name of the company")
     description: str = Field(default="", description="Description of the company")
     admin_id: str = Field(default="", description="ID of the user who is the admin of the company")
 
+    created_at: str = Field(default_factory=lambda: datetime.now().isoformat())
     class Meta:
         database = get_redis_connection(url=REDIS_URL)
 
