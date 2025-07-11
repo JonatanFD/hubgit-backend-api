@@ -1,8 +1,8 @@
 from fastapi import APIRouter
 from redis_om.model.model import NotFoundError
-from datetime import datetime
 from resources.create_user_resource import CreateUserResource
-from entities.user import User, PlatformUserRoles
+from resources.user_resource import UserResource
+from entities.user import User
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -12,7 +12,7 @@ Endpoint for user sign-in.
 """
 @router.post("/sign-up")
 async def sign_up(req: CreateUserResource):
-    dump = req.model_dump(exclude_unset=True)
+    dump = req.model_dump()
 
     try:
         found_user = User.find(User.email == dump.get("email")).first()
@@ -20,16 +20,16 @@ async def sign_up(req: CreateUserResource):
         found_user = None
 
     if found_user:
-        return {"message": "User already exists."}
+        return UserResource.build_error("User already exists with this email.")
 
     '''
     Here should the some contrains to check if the user information is valid.
     '''
 
     user = User(**dump)
-    saved = user.save()
+    saved_user = user.save()
 
-    return saved.model_dump()
+    return UserResource.build_from_entity(saved_user)
 
 @router.post("/sign-in")
 async def sign_in():

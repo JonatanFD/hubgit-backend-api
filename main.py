@@ -1,12 +1,8 @@
 from contextlib import asynccontextmanager
-
-import httpx
 from fastapi import FastAPI
-from redis import Redis
 from redis_om import Migrator
 
 from controllers import auth
-from env import REDIS_URL, REDIS_PORT
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
