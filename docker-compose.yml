@@ -9,4 +9,5 @@ services:
     ports:
       - "8000:8000"
     environment:
-      REDIS_URL: redis://20.110.94.67:6379
+      REDIS_URL: 20.110.94.67
+      REDIS_PORT: 6379

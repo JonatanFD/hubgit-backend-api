@@ -1,10 +1,9 @@
 from datetime import datetime
-from uuid import uuid4
 
-from redis_om import Field, JsonModel, get_redis_connection
+from redis_om import Field, JsonModel
 from enum import Enum
 
-from env import REDIS_URL
+from env import REDIS_URL, REDIS_CONN
 
 
 class CompanyMemberRoles(str, Enum):
@@ -18,7 +17,7 @@ class Company(JsonModel, index=True):
 
     created_at: str = Field(default_factory=lambda: datetime.now().isoformat())
     class Meta:
-        database = get_redis_connection(url=REDIS_URL)
+        database = REDIS_CONN
 
 class CompanyMember(JsonModel, index=True):
     created_at: str = Field(default_factory=lambda: datetime.now().isoformat())
@@ -28,5 +27,5 @@ class CompanyMember(JsonModel, index=True):
     role: CompanyMemberRoles = Field(default=CompanyMemberRoles.MEMBER, description="Role of the user in the company (e.g., member, admin)")
 
     class Meta:
-        database = get_redis_connection(url=REDIS_URL)
+        database = REDIS_CONN
 

@@ -3,7 +3,7 @@ from typing import Set
 
 from redis_om import Field, JsonModel, get_redis_connection
 
-from env import REDIS_URL
+from env import REDIS_URL, REDIS_CONN
 
 
 class Post(JsonModel, index=True):
@@ -17,7 +17,7 @@ class Post(JsonModel, index=True):
     likes: Set[str] = Field(default_factory=set, description="ID of the user who liked the post")
 
     class Meta:
-        database = get_redis_connection(url=REDIS_URL)
+        database = REDIS_CONN
 
 class PostComment(JsonModel, index=True):
     created_at: str = Field(default_factory=lambda: datetime.now().isoformat())
@@ -28,4 +28,4 @@ class PostComment(JsonModel, index=True):
     likes: Set[str] = Field(default_factory=set, description="ID of the user who liked the comment")
 
     class Meta:
-        database = get_redis_connection(url=REDIS_URL)
+        database = REDIS_CONN

@@ -1,9 +1,9 @@
 from datetime import datetime
 
-from redis_om import Field, get_redis_connection, JsonModel
+from redis_om import Field, JsonModel
 from enum import Enum
 
-from env import REDIS_URL
+from env import REDIS_CONN
 
 
 class PlatformUserRoles(str, Enum):
@@ -19,4 +19,4 @@ class User(JsonModel, index=True):
 
     created_at: str = Field(index=True, default_factory=lambda: datetime.now().isoformat())
     class Meta:
-        database = get_redis_connection(url=REDIS_URL)
+        database = REDIS_CONN
