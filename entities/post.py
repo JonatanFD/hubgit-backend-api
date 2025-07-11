@@ -9,8 +9,8 @@ from env import REDIS_URL
 class Post(JsonModel, index=True):
     created_at: str = Field(default_factory=lambda: datetime.now().isoformat())
 
-    author_id: str = Field(description="ID of the user who is the author of the post")
-    company_id: str = Field(description="ID of the company to which the post belongs")
+    author_id: str = Field(description="ID of the user who is the author of the post", index=True)
+    company_id: str = Field(description="ID of the company to which the post belongs", index=True)
     title: str = Field(default="", description="Title of the post")
     content: str = Field(default="", description="Content of the post")
     tags: Set[str] = Field(default=[], description="List of tags associated with the post")
@@ -22,7 +22,7 @@ class Post(JsonModel, index=True):
 class PostComment(JsonModel, index=True):
     created_at: str = Field(default_factory=lambda: datetime.now().isoformat())
 
-    post_id: str = Field(description="ID of the post to which the comment belongs")
+    post_id: str = Field(description="ID of the post to which the comment belongs", index=True)
     author_id: str = Field(description="ID of the user who is the author of the comment")
     content: str = Field(default="", description="Content of the comment")
     likes: Set[str] = Field(description="ID of the user who liked the comment")

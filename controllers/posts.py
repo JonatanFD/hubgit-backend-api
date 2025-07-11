@@ -43,3 +43,17 @@ async def create_post(resource: CreatePostResource, company_id: str):
 
     # Return the saved post as a dictionary
     return saved_post.model_dump()
+
+
+@router.get("/{company_id}/posts")
+async def get_posts(company_id: str):
+    try:
+        company = Company.get(company_id)
+    except NotFoundError:
+        return {"error": "Company not found"}
+
+    # Fetch all posts for the company
+    posts = Post.find(Post.company_id == company_id).all()
+    if not posts:
+        return {"message": "No posts found for this company"}
+    return [post.model_dump() for post in posts]
