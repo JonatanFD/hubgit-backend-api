@@ -8,6 +8,5 @@ services:
     container_name: hubgit-backend
     ports:
       - "8000:8000"
-    environment:
-      REDIS_URL: 20.110.94.67
-      REDIS_PORT: 6379
+    env_file:
+      - .env
