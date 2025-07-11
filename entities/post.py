@@ -8,7 +8,6 @@ from env import REDIS_URL
 
 
 class Post(JsonModel, index=True):
-    id: str = Field(default_factory=lambda: str(uuid4()))
     created_at: str = Field(default_factory=lambda: datetime.now().isoformat())
 
     author_id: str = Field(description="ID of the user who is the author of the post")
@@ -22,7 +21,6 @@ class Post(JsonModel, index=True):
         database = get_redis_connection(url=REDIS_URL)
 
 class PostComment(JsonModel, index=True):
-    id: str = Field(default_factory=lambda: str(uuid4()))
     created_at: str = Field(default_factory=lambda: datetime.now().isoformat())
 
     post_id: str = Field(description="ID of the post to which the comment belongs")

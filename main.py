@@ -1,8 +1,28 @@
+from contextlib import asynccontextmanager
+
+import httpx
 from fastapi import FastAPI
+from redis import Redis
+from redis_om import Migrator
+
 from controllers import auth
-app = FastAPI()
+from env import REDIS_URL, REDIS_PORT
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    app.state.redis = Redis(host=REDIS_URL, port=REDIS_PORT)
+    app.state.http_client = httpx.AsyncClient()
+    try:
+        Migrator().run()
+        yield
+    finally:
+        app.state.redis.close()
+        await app.state.http_client.aclose()
+
+app = FastAPI(lifespan=lifespan)
 
 app.include_router(auth.router)
+
 @app.get("/")
 async def root():
     return {"message": "Hello World"}

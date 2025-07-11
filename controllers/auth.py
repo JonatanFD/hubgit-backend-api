@@ -1,8 +1,8 @@
 from fastapi import APIRouter
-
-from assemblers.user_assembler import UserAssembler
-from entities.user import User as UserModel
+from redis_om.model.model import NotFoundError
+from datetime import datetime
 from resources.create_user_resource import CreateUserResource
+from entities.user import User, PlatformUserRoles
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -11,22 +11,27 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 Endpoint for user sign-in.
 """
 @router.post("/sign-up")
-async def sign_in(req: CreateUserResource):
+async def sign_up(req: CreateUserResource):
     dump = req.model_dump(exclude_unset=True)
 
-    found_user = UserModel.find(UserModel.username == dump["email"]).all()
+    print(dump.get("email"))
+    print(User.email)
 
-    print(found_user)
+    try:
+        found_user = User.find(User.email == dump.get("email")).first()
+    except NotFoundError:
+        found_user = None
+
     if found_user:
         return {"message": "User already exists."}
 
-    user = UserModel(**req.model_dump())
+    user = User(**dump)
     saved = user.save()
-    user_resource = UserAssembler.to_user_resource_from_entity(user=saved)
-    return user_resource
+
+    return saved.dict()
 
 @router.post("/sign-in")
-async def sign_up():
+async def sign_in():
     """
     Endpoint for user sign-up.
     This is a placeholder function that should be implemented with actual registration logic.

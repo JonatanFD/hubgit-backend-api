@@ -12,7 +12,6 @@ class CompanyMemberRoles(str, Enum):
     MEMBER = "member"
 
 class Company(JsonModel, index=True):
-    id: str = Field(default_factory=lambda: str(uuid4()))
     created_at: str = Field(default_factory=lambda: datetime.now().isoformat())
 
     name: str = Field(default="", description="Name of the company")
@@ -23,7 +22,6 @@ class Company(JsonModel, index=True):
         database = get_redis_connection(url=REDIS_URL)
 
 class CompanyMember(JsonModel, index=True):
-    id: str = Field(default_factory=lambda: str(uuid4()))
     created_at: str = Field(default_factory=lambda: datetime.now().isoformat())
 
     company_id: str = Field(default="", description="ID of the company")
