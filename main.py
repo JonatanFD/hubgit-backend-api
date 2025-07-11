@@ -5,7 +5,7 @@ from fastapi import FastAPI, Request
 from fastapi.routing import APIRoute
 from redis_om import Migrator
 
-from controllers import auth, companies
+from controllers import auth, companies, posts
 from services.jwt import verify_access_token
 
 
@@ -18,6 +18,7 @@ app = FastAPI(lifespan=lifespan)
 
 app.include_router(auth.router)
 app.include_router(companies.router)
+app.include_router(posts.router)
 
 @app.middleware("http")
 async def add_process_time_header(request: Request, call_next):

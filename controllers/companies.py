@@ -29,6 +29,20 @@ async def create_company(resource: CreateCompanyResource):
     if not saved_company:
         return {"error": "Failed to create company"}
 
+    # Create a new company member instance for the admin
+    company_member = {
+        "company_id": saved_company.pk,
+        "user_id": dump["admin_id"],
+        "role": "admin"
+    }
+
+    # Save the company member to the database
+    company_member_entity = CompanyMember(**company_member)
+
+    company_member_entity.save()
+    if not company_member_entity:
+        return {"error": "Failed to add admin as a member of the company"}
+
     # Return the saved company as a dictionary
     return CompanyResource.model_dump(saved_company)
 
@@ -85,12 +99,13 @@ async def get_members(company_id: str):
 
     return [member.model_dump() for member in members]
 """
-jonatan : 01JZXEV0FVH8QA456XBRZMHZQ5
-mateo: 01JZXEVQN8BTY6WN48T16GXPA3
+jonatan : 01JZXFCZ3E8C7QGEEMT68GYRQV
+mateo: 01JZXFDS62A0BYWPE1YBQYW1YE
 
 Registra y no admite duplicados de correo
 Valida la contraseña
 
-empresa : 01JZXEW1SB1V9B7801NZ1B4GTW
+empresa : 01JZXFEC8117SX64BA1Q4KM2JM
 
+agrega y devuelve los miembros de la empresa
 """

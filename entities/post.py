@@ -1,8 +1,7 @@
 from datetime import datetime
-from uuid import uuid4
+from typing import Set
 
 from redis_om import Field, JsonModel, get_redis_connection
-from typing import Set
 
 from env import REDIS_URL
 
@@ -15,7 +14,7 @@ class Post(JsonModel, index=True):
     title: str = Field(default="", description="Title of the post")
     content: str = Field(default="", description="Content of the post")
     tags: Set[str] = Field(default=[], description="List of tags associated with the post")
-    likes: Set[str] = Field(description="ID of the user who liked the post")
+    likes: Set[str] = Field(default_factory=set, description="ID of the user who liked the post")
 
     class Meta:
         database = get_redis_connection(url=REDIS_URL)
@@ -30,4 +29,3 @@ class PostComment(JsonModel, index=True):
 
     class Meta:
         database = get_redis_connection(url=REDIS_URL)
-
