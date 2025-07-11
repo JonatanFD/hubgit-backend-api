@@ -24,7 +24,7 @@ PyJWT==2.10.1
 python-dotenv==1.1.1
 python-jose==3.5.0
 python-ulid==1.1.0
-redis==6.2.0
+redis<=6.0.0
 redis-om==1.0.2b0
 rsa==4.9.1
 six==1.17.0
