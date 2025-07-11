@@ -1,10 +1,16 @@
-from redis_om import Field
+from datetime import datetime
+from uuid import uuid4
+
+from redis_om import Field, JsonModel, get_redis_connection
 from typing import Set
-from entities.shared.audit_and_redis_metadata_schema import AuditableAndRedisMetadataSchema
+
+from env import REDIS_URL
 
 
+class Post(JsonModel, index=True):
+    id: str = Field(default_factory=lambda: str(uuid4()))
+    created_at: str = Field(default_factory=lambda: datetime.now().isoformat())
 
-class Post(AuditableAndRedisMetadataSchema):
     author_id: str = Field(description="ID of the user who is the author of the post")
     company_id: str = Field(description="ID of the company to which the post belongs")
     title: str = Field(default="", description="Title of the post")
@@ -12,9 +18,18 @@ class Post(AuditableAndRedisMetadataSchema):
     tags: Set[str] = Field(default=[], description="List of tags associated with the post")
     likes: Set[str] = Field(description="ID of the user who liked the post")
 
-class PostComment(AuditableAndRedisMetadataSchema):
+    class Meta:
+        database = get_redis_connection(url=REDIS_URL)
+
+class PostComment(JsonModel, index=True):
+    id: str = Field(default_factory=lambda: str(uuid4()))
+    created_at: str = Field(default_factory=lambda: datetime.now().isoformat())
+
     post_id: str = Field(description="ID of the post to which the comment belongs")
     author_id: str = Field(description="ID of the user who is the author of the comment")
     content: str = Field(default="", description="Content of the comment")
     likes: Set[str] = Field(description="ID of the user who liked the comment")
+
+    class Meta:
+        database = get_redis_connection(url=REDIS_URL)
 

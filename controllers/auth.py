@@ -12,13 +12,17 @@ Endpoint for user sign-in.
 """
 @router.post("/sign-up")
 async def sign_in(req: CreateUserResource):
+    dump = req.model_dump(exclude_unset=True)
+
+    found_user = UserModel.find(UserModel.username == dump["email"]).all()
+
+    print(found_user)
+    if found_user:
+        return {"message": "User already exists."}
 
     user = UserModel(**req.model_dump())
-
     saved = user.save()
-
     user_resource = UserAssembler.to_user_resource_from_entity(user=saved)
-
     return user_resource
 
 @router.post("/sign-in")
