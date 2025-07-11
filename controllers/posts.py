@@ -7,6 +7,7 @@ from entities.post import Post, PostComment
 from resources.create_post_resource import CreatePostResource
 from controllers.companies import get_members
 from resources.comment_post_resource import CommentPostResource
+from resources.like_a_comment_resource import LikeCommentResource
 from resources.like_a_post_resource import LikePostResource
 
 router = APIRouter(prefix="/companies", tags=["posts"])
@@ -119,6 +120,58 @@ async def like_post(company_id: str, post_id: str, resource: LikePostResource):
 
     return HTTP_200_OK
 
+@router.post("/{company_id}/posts/{post_id}/comments/{comment_id}/likes")
+async def like_comment(company_id: str, post_id: str, comment_id: str, resource: LikeCommentResource):
+    # check if the company exists
+    try:
+        company = Company.get(company_id)
+    except NotFoundError:
+        return {"error": "Company not found"}
+
+    # check if the post exists
+    try:
+        post = Post.get(post_id)
+    except NotFoundError:
+        return {"error": "Post not found"}
+
+    # check if the comment exists
+    try:
+        comment = PostComment.get(comment_id)
+    except NotFoundError:
+        return {"error": "Comment not found"}
+
+    # check if the user is a member of the company
+    members = await get_members(company_id)
+    if resource.user_id not in [member["user_id"] for member in members]:
+        return {"error": "User is not a member of this company"}
+
+    # Add the user to the likes set of the comment
+    comment.likes.add(resource.user_id)
+    comment.save()
+
+    return HTTP_200_OK
+
+@router.get("/{company_id}/posts/{post_id}/comments")
+async def get_comments(company_id: str, post_id: str):
+    # check if the company exists
+    try:
+        company = Company.get(company_id)
+    except NotFoundError:
+        return {"error": "Company not found"}
+
+    # check if the post exists
+    try:
+        post = Post.get(post_id)
+    except NotFoundError:
+        return {"error": "Post not found"}
+
+    # Fetch all comments for the post
+    comments = PostComment.find(PostComment.post_id == post_id).all()
+    if not comments:
+        return {"message": "No comments found for this post"}
+
+    return [comment.model_dump() for comment in comments]
+
 """
 jonatan : 01JZXH2GW5V24620DHNBTFBDTC
 mateo: 01JZXH334ZR2DPPMHDGK9PK7Q9
@@ -131,4 +184,5 @@ empresa : 01JZXH3E8XGNY4VQ5A8Y05Q7AX
 agrega y devuelve los miembros de la empresa
 
 post : 01JZXH54DQ7BKRAYD8M2MXZFJ9
+comment: 01JZXHEDN6CER75YQYF6VJC819
 """
