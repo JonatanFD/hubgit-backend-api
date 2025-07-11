@@ -98,3 +98,14 @@ async def get_members(company_id: str):
         return {"message": "No members found for this company"}
 
     return [member.model_dump() for member in members]
+
+
+""""
+jonatan: 01JZXRT3B8DTK50HS6V6NESR1P
+mateo: 01JZXRVHJK8S9P86VAM7KWMMY4
+
+
+company 01JZXRW86E5GNDDD9PGKFXS3F2
+
+
+"""

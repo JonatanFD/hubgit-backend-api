@@ -54,3 +54,5 @@ async def sign_in(req: SignInResource):
     access_token = create_access_token({"sub": found_user.email})
 
     return SignInResourceWithToken.build_from_entity(found_user.pk, found_user.email, access_token)
+
+
