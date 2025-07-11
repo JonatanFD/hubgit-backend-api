@@ -6,6 +6,7 @@ from fastapi.routing import APIRoute
 from redis_om import Migrator
 
 from controllers import auth, companies, posts
+from env import REDIS_URL
 from services.jwt import verify_access_token
 
 
@@ -47,7 +48,7 @@ async def health_check():
     Health check endpoint to verify the service is running.
     """
     import redis
-    r = redis.Redis.from_url("redis://localhost:6379")
+    r = redis.Redis.from_url(REDIS_URL)
     print(r.ping())  # → Debería dar True
     print(r.execute_command("command", "info", "json.set"))
 
