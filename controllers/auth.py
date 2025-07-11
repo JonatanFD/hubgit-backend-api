@@ -1,8 +1,14 @@
-from fastapi import APIRouter
+from fastapi import (APIRouter, HTTPException)
 from redis_om.model.model import NotFoundError
 from resources.create_user_resource import CreateUserResource
+from resources.sign_in_resource import SignInResource
+from resources.sign_in_resource_with_token import SignInResourceWithToken
 from resources.user_resource import UserResource
 from entities.user import User
+from services.jwt import create_access_token
+import bcrypt
+
+SALT_SIZE = 10
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -22,9 +28,9 @@ async def sign_up(req: CreateUserResource):
     if found_user:
         return UserResource.build_error("User already exists with this email.")
 
-    '''
-    Here should the some contrains to check if the user information is valid.
-    '''
+    # Hash the password using bcrypt
+    hashed_password = bcrypt.hashpw(dump.get("password").encode("utf-8"), bcrypt.gensalt(SALT_SIZE))
+    dump["password"] = hashed_password.decode("utf-8")
 
     user = User(**dump)
     saved_user = user.save()
@@ -32,9 +38,20 @@ async def sign_up(req: CreateUserResource):
     return UserResource.build_from_entity(saved_user)
 
 @router.post("/sign-in")
-async def sign_in():
-    """
-    Endpoint for user sign-up.
-    This is a placeholder function that should be implemented with actual registration logic.
-    """
-    return {"message": "Sign-up endpoint not implemented yet."}
+async def sign_in(req: SignInResource):
+    dump = req.model_dump()
+
+    try:
+        found_user = User.find(User.email == dump.get("email")).first()
+    except NotFoundError:
+        found_user = None
+
+    print(found_user)
+
+    if not found_user or not bcrypt.checkpw(dump.get("password").encode("utf-8"), found_user.password.encode("utf-8")):
+        raise HTTPException(status_code=401, detail="Invalid email or password")
+
+    # Generate JWT token
+    access_token = create_access_token({"sub": found_user.email})
+
+    return SignInResourceWithToken.build_from_entity(found_user.pk, found_user.email, access_token)
