@@ -10,14 +10,8 @@ from env import REDIS_URL, REDIS_PORT
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    app.state.redis = Redis(host=REDIS_URL, port=REDIS_PORT)
-    app.state.http_client = httpx.AsyncClient()
-    try:
-        Migrator().run()
-        yield
-    finally:
-        app.state.redis.close()
-        await app.state.http_client.aclose()
+    Migrator().run()
+    yield
 
 app = FastAPI(lifespan=lifespan)
 

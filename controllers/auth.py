@@ -14,9 +14,6 @@ Endpoint for user sign-in.
 async def sign_up(req: CreateUserResource):
     dump = req.model_dump(exclude_unset=True)
 
-    print(dump.get("email"))
-    print(User.email)
-
     try:
         found_user = User.find(User.email == dump.get("email")).first()
     except NotFoundError:
@@ -25,10 +22,14 @@ async def sign_up(req: CreateUserResource):
     if found_user:
         return {"message": "User already exists."}
 
+    '''
+    Here should the some contrains to check if the user information is valid.
+    '''
+
     user = User(**dump)
     saved = user.save()
 
-    return saved.dict()
+    return saved.model_dump()
 
 @router.post("/sign-in")
 async def sign_in():
