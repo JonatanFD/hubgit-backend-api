@@ -98,14 +98,3 @@ async def get_members(company_id: str):
         return {"message": "No members found for this company"}
 
     return [member.model_dump() for member in members]
-"""
-jonatan : 01JZXGFYP7P104KJ6X7KZTRV2G
-mateo: 01JZXGG8DMK1Z974NWM896KRWV
-
-Registra y no admite duplicados de correo
-Valida la contraseña
-
-empresa : 01JZXGGJ6JM0AQB1DM7WX9HGEP
-
-agrega y devuelve los miembros de la empresa
-"""

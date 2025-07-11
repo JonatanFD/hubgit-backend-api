@@ -25,7 +25,7 @@ class PostComment(JsonModel, index=True):
     post_id: str = Field(description="ID of the post to which the comment belongs", index=True)
     author_id: str = Field(description="ID of the user who is the author of the comment")
     content: str = Field(default="", description="Content of the comment")
-    likes: Set[str] = Field(description="ID of the user who liked the comment")
+    likes: Set[str] = Field(default_factory=set, description="ID of the user who liked the comment")
 
     class Meta:
         database = get_redis_connection(url=REDIS_URL)
