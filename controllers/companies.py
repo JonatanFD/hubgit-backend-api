@@ -47,7 +47,7 @@ async def add_member(resource: AddMemberToCompanyResource, company_id: str):
 
     try:
         user_exists_in_company = CompanyMember.find(
-            CompanyMember.company_id == company_id &
+            CompanyMember.company_id == company_id and
             CompanyMember.user_id == resource.user_id
         ).first()
     except NotFoundError:
@@ -84,3 +84,13 @@ async def get_members(company_id: str):
         return {"message": "No members found for this company"}
 
     return [member.model_dump() for member in members]
+"""
+jonatan : 01JZXEV0FVH8QA456XBRZMHZQ5
+mateo: 01JZXEVQN8BTY6WN48T16GXPA3
+
+Registra y no admite duplicados de correo
+Valida la contraseña
+
+empresa : 01JZXEW1SB1V9B7801NZ1B4GTW
+
+"""

@@ -23,8 +23,8 @@ class Company(JsonModel, index=True):
 class CompanyMember(JsonModel, index=True):
     created_at: str = Field(default_factory=lambda: datetime.now().isoformat())
 
-    company_id: str = Field(default="", description="ID of the company")
-    user_id: str = Field(default="", description="ID of the user who is a member of the company")
+    company_id: str = Field(default="", description="ID of the company", index=True)
+    user_id: str = Field(default="", description="ID of the user who is a member of the company", index=True)
     role: CompanyMemberRoles = Field(default=CompanyMemberRoles.MEMBER, description="Role of the user in the company (e.g., member, admin)")
 
     class Meta:

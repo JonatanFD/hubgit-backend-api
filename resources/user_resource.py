@@ -4,7 +4,7 @@ from entities.user import User
 
 
 class UserResource(JsonModel):
-    user_id: str
+    pk: str
     email: str
     username: str
     platform_role: str
@@ -12,11 +12,11 @@ class UserResource(JsonModel):
     @staticmethod
     def build_from_entity(entity: User):
         return UserResource(
-            user_id=entity.pk,
+            pk=entity.pk,
             email=entity.email,
             username=entity.username,
             platform_role=entity.platform_role.value
-        ).model_dump()
+        )
 
     @staticmethod
     def build_error(msg: str):

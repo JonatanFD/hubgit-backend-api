@@ -33,6 +33,7 @@ async def sign_up(req: CreateUserResource):
     dump["password"] = hashed_password.decode("utf-8")
 
     user = User(**dump)
+    print("created ", user)
     saved_user = user.save()
 
     return UserResource.build_from_entity(saved_user)
