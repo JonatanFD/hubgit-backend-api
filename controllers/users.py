@@ -47,7 +47,7 @@ async def get_user_companies(user_id: str):
 
 
 
-@router.get("/{user_id}/companies{company_id}")
+@router.get("/{user_id}/companies/{company_id}")
 async def get_company(user_id: str, company_id: str):
     """
     Endpoint to retrieve company information by company ID.
