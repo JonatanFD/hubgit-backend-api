@@ -45,3 +45,31 @@ async def get_user_companies(user_id: str):
 
     return {"user_id": user.pk, "companies": company_details}
 
+
+
+@router.get("/{user_id}/companies{company_id}")
+async def get_company(user_id: str, company_id: str):
+    """
+    Endpoint to retrieve company information by company ID.
+    """
+
+    try:
+        company = Company.get(company_id)
+    except NotFoundError:
+        return {"error": "Company not found"}
+
+    # Check if the user is a member of the company
+    try:
+        member = CompanyMember.find(
+            CompanyMember.company_id == company_id and
+            CompanyMember.user_id == user_id
+        ).first()
+    except NotFoundError:
+        member = None
+
+    if not member:
+        return {"error": "User is not a member of this company"}
+
+    # Return the company details
+
+    return company.model_dump()

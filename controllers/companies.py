@@ -101,35 +101,6 @@ async def get_members(company_id: str):
     return [member.model_dump() for member in members]
 
 
-@router.get("/{company_id}")
-async def get_company(resource: GetCompanyDetailsResource, company_id: str):
-    """
-    Endpoint to retrieve company information by company ID.
-    """
-    print(company_id)
-
-    print("Fetching company with ID:", resource.model_dump())
-
-    try:
-        company = Company.get(company_id)
-    except NotFoundError:
-        return {"error": "Company not found"}
-
-    # Check if the user is a member of the company
-    try:
-        member = CompanyMember.find(
-            CompanyMember.company_id == company_id and
-            CompanyMember.user_id == resource.user_id
-        ).first()
-    except NotFoundError:
-        member = None
-
-    if not member:
-        return {"error": "User is not a member of this company"}
-
-    # Return the company details
-
-    return CompanyResource.model_dump(company)
 
 """"
 jonatan: 01JZXRT3B8DTK50HS6V6NESR1P
