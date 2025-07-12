@@ -7,6 +7,7 @@ from entities.post import Post, PostComment
 from resources.create_post_resource import CreatePostResource
 from controllers.companies import get_members
 from resources.comment_post_resource import CommentPostResource
+from resources.get_post_by_id_and_user_id_resource import GetCompanyDetailsResource
 from resources.like_a_comment_resource import LikeCommentResource
 from resources.like_a_post_resource import LikePostResource
 
@@ -61,6 +62,31 @@ async def get_posts(company_id: str):
     if not posts:
         return {"message": "No posts found for this company"}
     return [post.model_dump() for post in posts]
+
+
+@router.post("/{company_id}/posts/{post_id}", description="used to get the post by id but using the body to pass the user_id")
+async def get_post(resource: GetCompanyDetailsResource, company_id: str, post_id: str):
+    # check if the company exists
+    try:
+        company = Company.get(company_id)
+    except NotFoundError:
+        return {"error": "Company not found"}
+
+    # check if the post exists
+    try:
+        post = Post.get(post_id)
+    except NotFoundError:
+        return {"error": "Post not found"}
+
+    # check if the user is a member of the company
+    members = await get_members(company_id)
+    if resource.user_id not in [member["user_id"] for member in members]:
+        return {"error": "User is not a member of this company"}
+
+    # Return the post if the user is a member of the company
+    # Return the post as a dictionary
+    return post.model_dump()
+
 
 @router.post("/{company_id}/posts/{post_id}/comments")
 async def comment_post(resource: CommentPostResource ,company_id: str, post_id: str):
