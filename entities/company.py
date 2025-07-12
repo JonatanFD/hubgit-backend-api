@@ -3,7 +3,7 @@ from datetime import datetime
 from redis_om import Field, JsonModel
 from enum import Enum
 
-from env import REDIS_URL, REDIS_CONN
+from env import REDIS_CONN
 
 
 class CompanyMemberRoles(str, Enum):
