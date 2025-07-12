@@ -52,7 +52,9 @@ async def get_company(user_id: str, company_id: str):
     """
     Endpoint to retrieve company information by company ID.
     """
-
+    print("Fetching user with ID:", user_id)
+    # Check if the user exists
+    print("Fetching company with ID:", company_id)
     try:
         company = Company.get(company_id)
     except NotFoundError:
